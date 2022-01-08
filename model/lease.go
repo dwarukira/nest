@@ -16,7 +16,7 @@ const (
 )
 
 func (ct *LeaseStatusType) Scan(value interface{}) error {
-	*ct = LeaseStatusType(value.([]byte))
+	*ct = LeaseStatusType(value.(string))
 	return nil
 }
 
@@ -26,15 +26,15 @@ func (ct LeaseStatusType) Value() (driver.Value, error) {
 
 type Lease struct {
 	Base
-	LeaseNumber       string          `gorm:"column:lease_number"`
-	StartDate         time.Time       `gorm:"column:start_date"`
-	EndDate           time.Time       `gorm:"column:end_date"`
-	MonthlyRent       int             `gorm:"column:monthly_rent"`
-	SecurityDeposit   int             `gorm:"column:security_deposit"`
-	UnitID            uuid.UUID       `gorm:"column:unit_id"`
-	LeaseStatus       LeaseStatusType `sql:"status" gorm:"column:status"`
-	RentDueDayOfMonth int             `gorm:"column:rent_due_day_of_month"`
-	Unit              Unit            `gorm:"foreignKey:id" json:"-"`
+	LeaseNumber       string          `gorm:"column:lease_number" json:"lease_number"`
+	StartDate         time.Time       `gorm:"column:start_date" json:"start_date"`
+	EndDate           time.Time       `gorm:"column:end_date" json:"end_date"`
+	MonthlyRent       int             `gorm:"column:monthly_rent" json:"rent"`
+	SecurityDeposit   int             `gorm:"column:security_deposit" json:"security_deposit"`
+	UnitID            uuid.UUID       `gorm:"column:unit_id" json:"unit_id"`
+	LeaseStatus       LeaseStatusType `sql:"status" gorm:"column:status" json:"lease_status"`
+	RentDueDayOfMonth int             `gorm:"column:rent_due_day_of_month" json:"rent_due_day_of_month"`
+	Unit              Unit            `json:"unit"`
 }
 
 func (l *Lease) TableName() string {

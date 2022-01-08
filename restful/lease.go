@@ -1,10 +1,12 @@
 package restful
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/solabsafrica/afrikanest/exceptions"
 	"github.com/solabsafrica/afrikanest/logger"
 	"github.com/solabsafrica/afrikanest/model"
 	"github.com/solabsafrica/afrikanest/restful/middlewares"
@@ -72,5 +74,22 @@ func (ctrl *leaseController) CreateLeaseHandler(ctx *gin.Context) {
 }
 
 func (ctrl *leaseController) GetLeaseHandler(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, exceptions.UUIDParseFailed.SetMessage(ctx.Param("id")))
+		return
+	}
+
+	lease, err := ctrl.leaseService(ctx).GetLeaseById(id)
+	if err != nil {
+		if errors.Is(err, exceptions.LeaseNotExists) {
+			ctx.JSON(http.StatusNotFound, err)
+		} else {
+			ctx.JSON(http.StatusInternalServerError, err)
+		}
+		return
+	}
+	// TODO: check access when we have tenants
+	ctx.JSON(http.StatusOK, lease)
 
 }
