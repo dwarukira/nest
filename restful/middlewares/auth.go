@@ -28,12 +28,14 @@ func (checker *authCheckImpl) Check(ctx *gin.Context) {
 		ctx.Abort()
 		return
 	}
-	_, err := checker.authService(context).Validate(parts[1], jwt.MapClaims{})
+	token, err := checker.authService(context).Validate(parts[1], jwt.MapClaims{})
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, err)
 		ctx.Abort()
 		return
 	}
+	claims, _ := token.Claims.(jwt.MapClaims)
+	ctx.Set("identity", claims["sub"])
 }
 
 func NewAuthChecker(authService service.AuthServiceWithContext) AuthChecker {

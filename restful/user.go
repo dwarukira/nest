@@ -2,6 +2,7 @@ package restful
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/solabsafrica/afrikanest/exceptions"
@@ -28,6 +29,7 @@ func NewUserController(group *gin.RouterGroup, authChecker middlewares.AuthCheck
 	v1.GET("/users", authChecker.Check, controller.GetUsersHandler)
 	v1.PUT("/user/:id", authChecker.Check, controller.UpdateUserHandler)
 	v1.DELETE("/user/:id", authChecker.Check, controller.DeleteUserHandler)
+	v1.GET("/me", authChecker.Check, controller.GetCurrentUserHandler)
 	v1.POST("/signup", controller.CreateUserHandler)
 }
 
@@ -124,4 +126,21 @@ func (ctrl *userController) DeleteUserHandler(ctx *gin.Context) {
 		return
 	}
 	ctx.Status(http.StatusOK)
+}
+
+func (ctrl *userController) GetCurrentUserHandler(ctx *gin.Context) {
+	identity, _ := ctx.Get("identity")
+	id, err := uuid.Parse(fmt.Sprintf("%v", identity))
+	if err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, exceptions.UUIDParseFailed)
+	}
+	if user, err := ctrl.userService(ctx).GetUserById(id); err != nil {
+		if errors.Is(err, exceptions.UserNotExists) {
+			ctx.JSON(http.StatusUnauthorized, err)
+		} else {
+			ctx.JSON(http.StatusInternalServerError, err)
+		}
+	} else {
+		ctx.JSON(http.StatusOK, response.NewGetUserResponse(user))
+	}
 }

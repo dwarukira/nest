@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/solabsafrica/afrikanest/config"
 	"github.com/solabsafrica/afrikanest/exceptions"
 	"github.com/solabsafrica/afrikanest/model"
@@ -123,4 +125,9 @@ func NewAuthServiceWithContext(userRepo repo.UserRepoWithContext) AuthServiceWit
 			ctx:      ctx,
 		}
 	}
+}
+
+func GetIndentityFromContext(ctx *gin.Context) (uuid.UUID, error) {
+	identity, _ := ctx.Get("identity")
+	return uuid.Parse(fmt.Sprintf("%v", identity))
 }

@@ -23,6 +23,11 @@ var (
 	UserAlreadyExist Error = NewError("user.already.exists")
 	UserNotExists    Error = NewError("user.not.exists")
 
+	PropertyCreateFailed Error = NewError(("property.create.failed"))
+	UnitCreateFailed     Error = NewError(("unit.create.failed"))
+	UnitNotExists        Error = NewError("unit.not.exists")
+	PropertyNotExists    Error = NewError(("property.not.exists"))
+
 	Unknown Error = NewError("unknown")
 )
 

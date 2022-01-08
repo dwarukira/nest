@@ -2,8 +2,10 @@ package restful
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/solabsafrica/afrikanest/exceptions"
 	"github.com/solabsafrica/afrikanest/restful/request"
 	"github.com/solabsafrica/afrikanest/restful/response"
@@ -11,6 +13,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+func GetIndentityFromContext(ctx *gin.Context) (uuid.UUID, error) {
+	identity, _ := ctx.Get("identity")
+	return uuid.Parse(fmt.Sprintf("%v", identity))
+}
 
 type authController struct {
 	authService service.AuthServiceWithContext
