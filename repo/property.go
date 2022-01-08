@@ -58,7 +58,7 @@ func (repo *propertyRepoImpl) GetById(id uuid.UUID) (model.Property, error) {
 
 func (repo *propertyRepoImpl) GetUnitById(id uuid.UUID) (model.Unit, error) {
 	var property model.Unit
-	err := repo.db(repo.ctx).First(&property, "id = ?", id).Error()
+	err := repo.db(repo.ctx).Joins("Property").First(&property, "units.id = ?", id).Error()
 	return property, err
 }
 

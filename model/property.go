@@ -6,7 +6,7 @@ type Property struct {
 	Base
 	Name        string    `gorm:"column:name"`
 	Description string    `gorm:"column:description"`
-	Owner       User      `gorm:"foreignKey:id" json:"-"`
+	Owner       User      `json:"-"`
 	OwnerID     uuid.UUID `json:"owner_id" gorm:"column:owner_id"`
 }
 

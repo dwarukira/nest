@@ -28,6 +28,8 @@ var (
 	UnitNotExists        Error = NewError("unit.not.exists")
 	PropertyNotExists    Error = NewError(("property.not.exists"))
 
+	LeaseCreateFaild Error = NewError("lease.create.faild")
+
 	Unknown Error = NewError("unknown")
 )
 

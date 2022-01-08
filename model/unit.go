@@ -7,7 +7,7 @@ type Unit struct {
 	Name        string    `gorm:"column:name" json:"name"`
 	Description string    `gorm:"column:description" json:"description"`
 	DefaultRent int       `gorm:"column:default_rent" json:"default_rent"`
-	Property    Property  `gorm:"foreignKey:id" json:"-"`
+	Property    Property  `json:"-"`
 	PropertyID  uuid.UUID `gorm:"column:"property_id" json:"property_id"`
 }
 

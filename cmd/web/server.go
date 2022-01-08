@@ -54,16 +54,19 @@ func setup(routerGroup *gin.RouterGroup) {
 
 	userRepo := repo.NewUserRepoWithContext(database)
 	propertyRepo := repo.NewPropertyRepoWithContext(database)
+	leaseRepo := repo.NewLeaseRepoWithContext(database)
 	_ = queue.NewJobQueue()
 
 	userService := service.NewUserServiceWithContext(userRepo)
 	authService := service.NewAuthServiceWithContext(userRepo)
 	propertyService := service.NewPropertyServiceWithContext(propertyRepo)
+	leaseService := service.NewLeaseServiceWithContext(leaseRepo)
 	authChecker := middlewares.NewAuthChecker(authService)
 
 	restful.NewUserController(routerGroup, authChecker, userService)
 	restful.NewAuthController(routerGroup, authService)
 	restful.NewPropertyController(routerGroup, authChecker, propertyService)
+	restful.NewLeaseController(routerGroup, authChecker, leaseService, propertyService)
 }
 
 func (server *restfulServer) Run() error {
