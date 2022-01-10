@@ -9,11 +9,12 @@ import (
 )
 
 type CreateLeaseRequest struct {
-	StartDate         string `json:"start_date"`
-	MonthlyRent       int    `json:"rent"`
-	SecurityDeposit   int    `json:"security_deposit"`
-	UnitID            string `json:"unit_id"`
-	RentDueDayOfMonth int    `json:"rent_due_day_of_month"`
+	StartDate         string                `json:"start_date"`
+	MonthlyRent       int                   `json:"rent"`
+	SecurityDeposit   int                   `json:"security_deposit"`
+	UnitID            string                `json:"unit_id"`
+	RentDueDayOfMonth int                   `json:"rent_due_day_of_month"`
+	Tenants           []CreateTenantRequest `json:"tenants"`
 }
 
 func (createLeaseRequest CreateLeaseRequest) Validate() error {
@@ -26,6 +27,14 @@ func (createLeaseRequest CreateLeaseRequest) Validate() error {
 
 	if createLeaseRequest.MonthlyRent == 0 {
 		return exceptions.LeaseCreateFaild.SetMessage("rent is empty")
+	}
+
+	if len(createLeaseRequest.Tenants) != 0 {
+		for _, tenant := range createLeaseRequest.Tenants {
+			if err := tenant.Validate(); err != nil {
+				return err
+			}
+		}
 	}
 
 	_, err := time.Parse("2006-01-02", createLeaseRequest.StartDate)
@@ -46,11 +55,26 @@ func (createLeaseRequest CreateLeaseRequest) ToLease() (model.Lease, error) {
 		return model.Lease{}, exceptions.LeaseCreateFaild.SetMessage("invalid unit_id")
 	}
 
+	var tenants []model.Tenant
+
+	for _, tenant := range createLeaseRequest.Tenants {
+		if err := tenant.Validate(); err != nil {
+			return model.Lease{}, err
+		}
+		t, err := tenant.ToTenant()
+		if err != nil {
+			return model.Lease{}, err
+		}
+		tenants = append(tenants, t)
+
+	}
+
 	return model.Lease{
 		StartDate:         t,
 		MonthlyRent:       createLeaseRequest.MonthlyRent,
 		SecurityDeposit:   createLeaseRequest.SecurityDeposit,
 		UnitID:            unitID,
 		RentDueDayOfMonth: createLeaseRequest.RentDueDayOfMonth,
+		Tenants:           &tenants,
 	}, nil
 }

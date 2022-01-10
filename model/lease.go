@@ -35,6 +35,7 @@ type Lease struct {
 	LeaseStatus       LeaseStatusType `sql:"status" gorm:"column:status" json:"lease_status"`
 	RentDueDayOfMonth int             `gorm:"column:rent_due_day_of_month" json:"rent_due_day_of_month"`
 	Unit              Unit            `json:"unit"`
+	Tenants           *[]Tenant       `json:"tenants"`
 }
 
 func (l *Lease) TableName() string {

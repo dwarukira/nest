@@ -1,5 +1,6 @@
 package response
 
+// swagger:model LoginResponse
 type LoginResponse struct {
 	Token string `json:"token"`
 }

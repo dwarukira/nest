@@ -31,6 +31,12 @@ var (
 	LeaseCreateFaild Error = NewError("lease.create.faild")
 	LeaseNotExists   Error = NewError("lease.not.exists")
 
+	TenantCreateFaild Error = NewError("tenant.create.faild")
+	TenantNotExists   Error = NewError("tenant.not.exists")
+
+	TicketCreateFaild Error = NewError("ticket.create.faild")
+	TicketNotExists   Error = NewError("ticket.not.exists")
+
 	Unknown Error = NewError("unknown")
 )
 

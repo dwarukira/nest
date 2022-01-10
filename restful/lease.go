@@ -18,18 +18,21 @@ import (
 type leaseController struct {
 	leaseService    service.LeaseServiceWithContext
 	propertyService service.PropertyServiceWithContext
+	smsService      service.SmsServiceWithContext
 }
 
-func NewLeaseController(group *gin.RouterGroup, authChecker middlewares.AuthChecker, leaseService service.LeaseServiceWithContext, propertyService service.PropertyServiceWithContext) {
+func NewLeaseController(group *gin.RouterGroup, authChecker middlewares.AuthChecker, leaseService service.LeaseServiceWithContext, propertyService service.PropertyServiceWithContext, smsService service.SmsServiceWithContext) {
 	controller := &leaseController{
 		leaseService:    leaseService,
 		propertyService: propertyService,
+		smsService:      smsService,
 	}
 
 	v1 := group.Group("/v1")
 
 	v1.POST("/leases", authChecker.Check, controller.CreateLeaseHandler)
 	v1.GET("/leases/:id", authChecker.Check, controller.GetLeaseHandler)
+	v1.GET("/leases/:id/tenants", authChecker.Check, controller.GetLeaseTenantsHandler)
 
 }
 
@@ -48,9 +51,10 @@ func (ctrl *leaseController) CreateLeaseHandler(ctx *gin.Context) {
 		return
 	}
 
-	lease.LeaseStatus = model.DRAFT
+	lease.LeaseStatus = model.ACTIVE
 	random_lease_number := uuid.New().String()
 	lease.LeaseNumber = random_lease_number
+
 	// ensure unit exist and we own it
 	unit, err := ctrl.propertyService(ctx).GetUnitById(lease.UnitID)
 	if err != nil {
@@ -58,17 +62,22 @@ func (ctrl *leaseController) CreateLeaseHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 		return
 	}
-	logger.Info(unit.Property.Name)
 	identity, _ := GetIndentityFromContext(ctx)
-
 	if unit.Property.OwnerID != identity {
-		logger.Error(err)
-		ctx.JSON(http.StatusUnauthorized, err)
+		logger.Error(errors.New("you are not the owner of this property"))
+		ctx.JSON(http.StatusUnauthorized, exceptions.LeaseCreateFaild.SetMessage("you are not the owner of this property"))
 		return
 	}
+	for _, l := range unit.Leases {
+		if l.LeaseStatus == model.ACTIVE {
+			logger.Error(errors.New("unit is already leased"))
+			ctx.JSON(http.StatusUnauthorized, exceptions.LeaseCreateFaild.SetMessage("unit is already leased, consider cancelling the existing lease"))
+			return
+		}
+	}
 	if lease, err = ctrl.leaseService(ctx).Create(lease); err != nil {
-		logger.Error(err)
 		ctx.JSON(http.StatusBadRequest, err)
+		return
 	}
 	ctx.JSON(http.StatusCreated, response.NewCreateLeaseResponse(lease))
 }
@@ -90,6 +99,12 @@ func (ctrl *leaseController) GetLeaseHandler(ctx *gin.Context) {
 		return
 	}
 	// TODO: check access when we have tenants
+	// err = ctrl.smsService(ctx).Send("+254728165763", "Hello World")
+
 	ctx.JSON(http.StatusOK, lease)
+
+}
+
+func (ctrl *leaseController) GetLeaseTenantsHandler(ctx *gin.Context) {
 
 }

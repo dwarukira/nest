@@ -12,6 +12,7 @@ import (
 	"github.com/solabsafrica/afrikanest/service"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/solabsafrica/afrikanest/docs"
 )
 
 func GetIndentityFromContext(ctx *gin.Context) (uuid.UUID, error) {
@@ -33,6 +34,21 @@ func NewAuthController(group *gin.RouterGroup, authService service.AuthServiceWi
 	return controller
 }
 
+// swagger:route POST /login auth loginUser
+//
+// Logs in a user and returns an access token
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+//
+// responses:
+// 	200: LoginResponse
+// 	401: ErrorResponse
+// 	500: ErrorResponse
+// 	404: ErrorResponse
 func (ctrl *authController) LoginHandler(ctx *gin.Context) {
 	var loginRequest request.EmailLoginRequest
 	if err := ctx.ShouldBindJSON(&loginRequest); err != nil {

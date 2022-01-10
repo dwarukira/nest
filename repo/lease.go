@@ -20,7 +20,7 @@ type LeaseQuery struct {
 type LeaseRepo interface {
 	Create(model.Lease) (model.Lease, error)
 	GetLeaseById(uuid.UUID) (model.Lease, error)
-	QueryLeases(query LeaseQuery) (users []model.Lease, total int64, err error)
+	QueryLeases(query LeaseQuery) (lease []model.Lease, total int64, err error)
 }
 
 type leaseRepoImpl struct {
@@ -44,7 +44,12 @@ func (repo *leaseRepoImpl) Create(lease model.Lease) (model.Lease, error) {
 
 func (repo *leaseRepoImpl) GetLeaseById(id uuid.UUID) (model.Lease, error) {
 	var lease model.Lease
-	err := repo.db(repo.ctx).Preload("Unit").Preload("Unit.Property").First(&lease, "id = ?", id).Error()
+	err := repo.db(repo.ctx).Preload("Unit").
+		Preload("Unit.Property").
+		Preload("Tenants").
+		Preload("Tenants.Lease").
+		Preload("Tenants.Lease.Unit.Property").
+		First(&lease, "id = ?", id).Error()
 	return lease, err
 }
 

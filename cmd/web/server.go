@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/solabsafrica/afrikanest/config"
 	"github.com/solabsafrica/afrikanest/db"
 	"github.com/solabsafrica/afrikanest/logger"
@@ -33,6 +34,14 @@ func NewServer() (Server, error) {
 	engine.GET("/health-check", func(c *gin.Context) {
 		c.String(http.StatusOK, "Still hanging")
 	})
+	configs := cors.DefaultConfig()
+	configs.AllowAllOrigins = true
+	configs.AllowCredentials = true
+	configs.AddAllowHeaders("authorization")
+	engine.Use(cors.New(configs))
+
+	// engine.Use(cors.Default())
+	engine.Use(gin.Logger())
 
 	routerGroup := engine.Group("api")
 
@@ -55,18 +64,22 @@ func setup(routerGroup *gin.RouterGroup) {
 	userRepo := repo.NewUserRepoWithContext(database)
 	propertyRepo := repo.NewPropertyRepoWithContext(database)
 	leaseRepo := repo.NewLeaseRepoWithContext(database)
+	ticketRepo := repo.NewTicketRepoWithContext(database)
 	_ = queue.NewJobQueue()
 
+	smsService := service.NewSmsServiceWithContext()
 	userService := service.NewUserServiceWithContext(userRepo)
 	authService := service.NewAuthServiceWithContext(userRepo)
 	propertyService := service.NewPropertyServiceWithContext(propertyRepo)
 	leaseService := service.NewLeaseServiceWithContext(leaseRepo)
+	ticketService := service.NewTicketServiceWithContext(ticketRepo)
 	authChecker := middlewares.NewAuthChecker(authService)
 
 	restful.NewUserController(routerGroup, authChecker, userService)
 	restful.NewAuthController(routerGroup, authService)
 	restful.NewPropertyController(routerGroup, authChecker, propertyService)
-	restful.NewLeaseController(routerGroup, authChecker, leaseService, propertyService)
+	restful.NewLeaseController(routerGroup, authChecker, leaseService, propertyService, smsService)
+	restful.NewTicketController(routerGroup, authChecker, ticketService)
 }
 
 func (server *restfulServer) Run() error {

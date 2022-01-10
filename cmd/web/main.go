@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/solabsafrica/afrikanest/docs"
 	"github.com/solabsafrica/afrikanest/logger"
 )
 

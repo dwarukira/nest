@@ -11,5 +11,7 @@ CREATE TABLE IF NOT EXISTS tenants(
   invite_accepted TIMESTAMP,
   invite_sent TIMESTAMP,
   lease_id uuid NOT NULL,
-  CONSTRAINT fk_tenant FOREIGN KEY(lease_id) REFERENCES leases(id)
+  user_id uuid,
+  CONSTRAINT fk_tenants_leases FOREIGN KEY (lease_id) REFERENCES leases(id) ON DELETE CASCADE,
+  CONSTRAINT fk_tenants_users FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );

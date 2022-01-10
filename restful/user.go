@@ -93,6 +93,20 @@ func (ctrl *userController) LoginHandler(ctx *gin.Context) {
 
 }
 
+// swagger:route PUT /user/{id} user updateUser
+//
+// Update user
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// responses:
+// 	200: UpdateUserResponse
+// 	401: ErrorResponse
+// 	500: ErrorResponse
+// 	404: ErrorResponse
 func (ctrl *userController) UpdateUserHandler(ctx *gin.Context) {
 	var updateRequest request.UpdateUserRequest
 	_, err := uuid.Parse(ctx.Param("id"))
@@ -104,10 +118,13 @@ func (ctrl *userController) UpdateUserHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnprocessableEntity, exceptions.UUIDParseFailed)
 	}
 	user, err := updateRequest.ToUser()
+	if err != nil {
+		ctx.JSON(http.StatusUnprocessableEntity, err)
+	}
 	if err = ctrl.userService(ctx).Update(user); err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, err)
 	} else {
-		ctx.Status(http.StatusOK)
+		ctx.JSON(http.StatusOK, response.NewUpdateUserResponse(user))
 	}
 }
 
@@ -128,6 +145,20 @@ func (ctrl *userController) DeleteUserHandler(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+// swagger:route GET /me user getCurrentUser
+//
+// Get current user
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// responses:
+// 	200: GetUserResponse
+// 	401: ErrorResponse
+// 	500: ErrorResponse
+// 	404: ErrorResponse
 func (ctrl *userController) GetCurrentUserHandler(ctx *gin.Context) {
 	identity, _ := ctx.Get("identity")
 	id, err := uuid.Parse(fmt.Sprintf("%v", identity))

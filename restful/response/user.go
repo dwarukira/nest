@@ -1,17 +1,27 @@
 package response
 
-import "github.com/solabsafrica/afrikanest/model"
+import (
+	"strings"
+
+	"github.com/solabsafrica/afrikanest/model"
+)
 
 type CreateUserResponse struct {
 	ID string `json:"id"`
 }
 
-type UpdateUsersResponse struct{}
+// swagger:model UpdateUserResponse
+type UpdateUserResponse struct {
+	ID        string `json:"id"`
+	UpdatedAt string `json:"updated_at"`
+}
 
+// swagger:model GetUserResponse
 type GetUserResponse struct {
 	ID        string `json:"id"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
+	Name      string `json:"name"`
 	Email     string `json:"email"`
 	Phone     string `json:"phone"`
 }
@@ -34,6 +44,7 @@ func NewGetUserResponse(user model.User) GetUserResponse {
 		LastName:  user.LastName,
 		Email:     user.Email,
 		Phone:     user.Phone,
+		Name:      strings.Title(strings.ToLower(user.FirstName)) + " " + strings.Title(strings.ToLower(user.LastName)),
 	}
 }
 
@@ -41,5 +52,12 @@ func NewGetUsersResponse(users []model.User, pagination Pagination) GetUsersResp
 	return GetUsersResponse{
 		Users:      users,
 		Pagination: pagination,
+	}
+}
+
+func NewUpdateUserResponse(user model.User) UpdateUserResponse {
+	return UpdateUserResponse{
+		ID:        user.ID.String(),
+		UpdatedAt: user.UpdatedAt.GoString(),
 	}
 }

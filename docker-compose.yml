@@ -51,8 +51,8 @@ services:
       postgres:
         condition: service_healthy
 
-  redis:
-    image: redis
+  # redis:
+  #   image: redis
 
   postgres:
     image: postgres:12.1

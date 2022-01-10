@@ -16,6 +16,18 @@ type CreateUserRequest struct {
 	ConfirmPassword model.Password `json:"confirm_password"`
 }
 
+// swagger:parameters  updateUser
+type UpdateUserRequestAPI struct {
+	// desc
+	// in: body
+	// required: true
+	Body UpdateUserRequest `json:",inline"`
+
+	// in: path
+	// required: true
+	ID string `json:"id"`
+}
+
 type UpdateUserRequest struct {
 	ID        string `json:"id"`
 	FirstName string `json:"first_name"`

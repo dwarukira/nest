@@ -16,7 +16,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-const tokenExpirationDuration = 30 //minutes
+const tokenExpirationDuration = 120 //minutes
 
 type AuthServiceWithContext func(ctx context.Context) AuthService
 

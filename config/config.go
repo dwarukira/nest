@@ -15,8 +15,15 @@ type Config struct {
 	DatabaseConfig DatabaseConfig `mapstructure:"database"`
 	RedisConfig    RedisConfig    `mapstructure:"redis"`
 	LogConfig      LogConfig      `mapstructure:"log"`
+	SmsConfig      SmsConfig      `mapstructure:"sms"`
 }
 
+type SmsConfig struct {
+	// Africa's Talking
+	Username string `mapstructure:"username"`
+	ApiKey   string `mapstructure:"api_key"`
+	Env      string `mapstructure:"env"`
+}
 type DatabaseConfig struct {
 	Type        string `mapstructure:"type"`
 	DatabaseUrl string `mapstructure:"url"`
@@ -80,4 +87,10 @@ func loadFromEnv(v *viper.Viper) {
 
 	// Log
 	v.BindEnv("log.log_level", "LOG_LEVEL")
+
+	// Sms
+	v.BindEnv("sms.username", "SMS_USERNAME")
+	v.BindEnv("sms.api_key", "SMS_API_KEY")
+	v.BindEnv("sms.env", "SMS_ENV")
+
 }

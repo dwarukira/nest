@@ -18,7 +18,7 @@ type CreatePropertyResponse struct {
 
 type CreateUnitResponse struct {
 	ID         string    `json:"id"`
-	PropertyID string    `json:"id"`
+	PropertyID string    `json:"proprty_id"`
 	CreatedAt  time.Time `json:"created_at"`
 }
 

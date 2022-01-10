@@ -17,9 +17,11 @@ CREATE TABLE IF NOT EXISTS tickets(
   description TEXT NOT NULL,
   images TEXT[],
   ticket_status_id uuid,
+  issue_type_id uuid,
   property_id uuid,
   unit_id uuid,
-  CONSTRAINT fk_tickets_status FOREIGN KEY(ticket_status_id) REFERENCES tickets_status(id)
+  CONSTRAINT fk_tickets_status FOREIGN KEY(ticket_status_id) REFERENCES tickets_status(id),
+  CONSTRAINT fk_tickets_issue_types FOREIGN KEY(issue_type_id) REFERENCES issue_types(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_tickets_title ON tickets(title);
