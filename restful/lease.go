@@ -33,9 +33,21 @@ func NewLeaseController(group *gin.RouterGroup, authChecker middlewares.AuthChec
 	v1.POST("/leases", authChecker.Check, controller.CreateLeaseHandler)
 	v1.GET("/leases/:id", authChecker.Check, controller.GetLeaseHandler)
 	v1.GET("/leases/:id/tenants", authChecker.Check, controller.GetLeaseTenantsHandler)
-
 }
 
+// swagger:route POST /leases lease createLease
+//
+//  Create a lease
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// responses:
+// 	201: CreateLeaseResponse
+//  401: ErrorResponse
+//  500: ErrorResponse
 func (ctrl *leaseController) CreateLeaseHandler(ctx *gin.Context) {
 	var createLeaseRequest request.CreateLeaseRequest
 	if err := ctx.ShouldBindJSON(&createLeaseRequest); err != nil {

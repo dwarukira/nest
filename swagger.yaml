@@ -2,6 +2,134 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  Base:
+    description: Base base struct
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      id:
+        $ref: '#/definitions/UUID'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  CreateLeaseRequest:
+    properties:
+      rent:
+        format: int64
+        type: integer
+        x-go-name: MonthlyRent
+      rent_due_day_of_month:
+        format: int64
+        type: integer
+        x-go-name: RentDueDayOfMonth
+      security_deposit:
+        format: int64
+        type: integer
+        x-go-name: SecurityDeposit
+      start_date:
+        type: string
+        x-go-name: StartDate
+      tenants:
+        items:
+          $ref: '#/definitions/CreateTenantRequest'
+        type: array
+        x-go-name: Tenants
+      unit_id:
+        type: string
+        x-go-name: UnitID
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  CreateLeaseResponse:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        type: string
+        x-go-name: ID
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  CreatePropertyRequest:
+    properties:
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  CreatePropertyResponse:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        type: string
+        x-go-name: ID
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  CreateTenantRequest:
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      first_name:
+        type: string
+        x-go-name: FirstName
+      last_name:
+        type: string
+        x-go-name: LastName
+      phone_number:
+        type: string
+        x-go-name: PhoneNumber
+      send_invite:
+        type: boolean
+        x-go-name: SendInvite
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  CreateUnitRequest:
+    properties:
+      default_rent:
+        format: int64
+        type: integer
+        x-go-name: DefaultRent
+      description:
+        type: string
+        x-go-name: Description
+      name:
+        type: string
+        x-go-name: Name
+      property_id:
+        type: string
+        x-go-name: PropertyID
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  CreateUnitResponse:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      id:
+        type: string
+        x-go-name: ID
+      proprty_id:
+        type: string
+        x-go-name: PropertyID
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  DeletedAt:
+    $ref: '#/definitions/NullTime'
   EmailLoginRequest:
     properties:
       email:
@@ -15,6 +143,9 @@ definitions:
     - password
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  EncryptedPassword:
+    type: string
+    x-go-package: github.com/solabsafrica/afrikanest/model
   ErrorResponse:
     properties:
       message:
@@ -29,6 +160,23 @@ definitions:
       type:
         type: string
         x-go-name: Type
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  GetPropertyResponse:
+    properties:
+      property:
+        $ref: '#/definitions/Property'
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  GetUnitsResponse:
+    properties:
+      pagination:
+        $ref: '#/definitions/Pagination'
+      units:
+        items:
+          $ref: '#/definitions/UnitsResponse'
+        type: array
+        x-go-name: Units
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/response
   GetUserResponse:
@@ -53,6 +201,98 @@ definitions:
         x-go-name: Phone
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  Lease:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      end_date:
+        format: date-time
+        type: string
+        x-go-name: EndDate
+      id:
+        $ref: '#/definitions/UUID'
+      lease_charges:
+        items:
+          $ref: '#/definitions/LeaseCharge'
+        type: array
+        x-go-name: Charges
+      lease_number:
+        type: string
+        x-go-name: LeaseNumber
+      lease_status:
+        $ref: '#/definitions/LeaseStatusType'
+      rent:
+        format: int64
+        type: integer
+        x-go-name: MonthlyRent
+      rent_due_day_of_month:
+        format: int64
+        type: integer
+        x-go-name: RentDueDayOfMonth
+      security_deposit:
+        format: int64
+        type: integer
+        x-go-name: SecurityDeposit
+      start_date:
+        format: date-time
+        type: string
+        x-go-name: StartDate
+      tenants:
+        items:
+          $ref: '#/definitions/Tenant'
+        type: array
+        x-go-name: Tenants
+      unit:
+        $ref: '#/definitions/Unit'
+      unit_id:
+        $ref: '#/definitions/UUID'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  LeaseCharge:
+    properties:
+      amount:
+        format: int64
+        type: integer
+        x-go-name: Amount
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      description:
+        type: string
+        x-go-name: Description
+      due_date:
+        format: date-time
+        type: string
+        x-go-name: DueDate
+      id:
+        $ref: '#/definitions/UUID'
+      lease:
+        $ref: '#/definitions/Lease'
+      lease_id:
+        $ref: '#/definitions/UUID'
+      name:
+        type: string
+        x-go-name: Name
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  LeaseStatusType:
+    type: string
+    x-go-package: github.com/solabsafrica/afrikanest/model
   LoginResponse:
     properties:
       token:
@@ -60,6 +300,64 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  NullTime:
+    description: |-
+      NullTime implements the Scanner interface so
+      it can be used as a scan destination, similar to NullString.
+    properties:
+      Time:
+        format: date-time
+        type: string
+      Valid:
+        type: boolean
+    title: NullTime represents a time.Time that may be null.
+    type: object
+    x-go-package: database/sql
+  Pagination:
+    properties:
+      page:
+        format: int64
+        type: integer
+        x-go-name: Page
+      page_size:
+        format: int64
+        type: integer
+        x-go-name: PageSize
+      total:
+        format: int64
+        type: integer
+        x-go-name: Total
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  Property:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        $ref: '#/definitions/UUID'
+      name:
+        type: string
+        x-go-name: Name
+      owner_id:
+        $ref: '#/definitions/UUID'
+      units:
+        items:
+          $ref: '#/definitions/Unit'
+        type: array
+        x-go-name: Units
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
   RefreshTokenRequest:
     properties:
       token:
@@ -67,6 +365,134 @@ definitions:
         x-go-name: Token
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  Tenant:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      email:
+        type: string
+        x-go-name: Email
+      id:
+        $ref: '#/definitions/UUID'
+      invite_accepted:
+        format: date-time
+        type: string
+        x-go-name: InviteAccepted
+      invite_sent:
+        format: date-time
+        type: string
+        x-go-name: InviteSent
+      invite_token:
+        type: string
+        x-go-name: InviteToken
+      last_name:
+        type: string
+        x-go-name: LastName
+      lease:
+        $ref: '#/definitions/Lease'
+      lease_id:
+        $ref: '#/definitions/UUID'
+      name:
+        type: string
+        x-go-name: FirstName
+      phone:
+        type: string
+        x-go-name: PhoneNumber
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      user:
+        $ref: '#/definitions/User'
+      user_id:
+        $ref: '#/definitions/UUID'
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  UUID:
+    description: |-
+      A UUID is a 128 bit (16 byte) Universal Unique IDentifier as defined in RFC
+      4122.
+    items:
+      format: uint8
+      type: integer
+    type: array
+    x-go-package: github.com/google/uuid
+  Unit:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      default_rent:
+        format: int64
+        type: integer
+        x-go-name: DefaultRent
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        $ref: '#/definitions/UUID'
+      leases:
+        items:
+          $ref: '#/definitions/Lease'
+        type: array
+        x-go-name: Leases
+      name:
+        type: string
+        x-go-name: Name
+      property:
+        $ref: '#/definitions/Property'
+      property_id:
+        $ref: '#/definitions/UUID'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  UnitsResponse:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      current_lease:
+        $ref: '#/definitions/Lease'
+      default_rent:
+        format: int64
+        type: integer
+        x-go-name: DefaultRent
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      description:
+        type: string
+        x-go-name: Description
+      id:
+        $ref: '#/definitions/UUID'
+      leases:
+        items:
+          $ref: '#/definitions/Lease'
+        type: array
+        x-go-name: Leases
+      name:
+        type: string
+        x-go-name: Name
+      property:
+        $ref: '#/definitions/Property'
+      property_id:
+        $ref: '#/definitions/UUID'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
   UpdateUserRequest:
     properties:
       email:
@@ -96,12 +522,67 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  User:
+    properties:
+      Email:
+        type: string
+      EncryptedPassword:
+        $ref: '#/definitions/EncryptedPassword'
+      FirstName:
+        type: string
+      LastName:
+        type: string
+      Phone:
+        type: string
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      id:
+        $ref: '#/definitions/UUID'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
 host: localhost:8081
 info:
   description: Documentation of AFRIKANEST API.
   title: afrikanest.
   version: 1.0.0
 paths:
+  /leases:
+    post:
+      consumes:
+      - application/json
+      description: Create a lease
+      operationId: createLease
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateLeaseRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: CreateLeaseResponse
+          schema:
+            $ref: '#/definitions/CreateLeaseResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - lease
   /login:
     post:
       consumes:
@@ -163,6 +644,184 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       tags:
       - user
+  /properties:
+    post:
+      consumes:
+      - application/json
+      description: Create a property
+      operationId: createProperty
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CreatePropertyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: CreatePropertyResponse
+          schema:
+            $ref: '#/definitions/CreatePropertyResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - property
+  /properties/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a property
+      operationId: getProperty
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetPropertyResponse
+          schema:
+            $ref: '#/definitions/GetPropertyResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - property
+  /units:
+    get:
+      consumes:
+      - application/json
+      description: Get all units
+      operationId: getUnits
+      parameters:
+      - description: in query
+        format: int64
+        in: query
+        name: Page
+        type: integer
+      - description: in query
+        format: int64
+        in: query
+        name: PageSize
+        type: integer
+      - in: query
+        name: name
+        type: string
+        x-go-name: Name
+      - in: query
+        name: query
+        type: string
+        x-go-name: Query
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetUnitsResponse
+          schema:
+            $ref: '#/definitions/GetUnitsResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - property
+    post:
+      consumes:
+      - application/json
+      description: Get all units
+      operationId: createUnit
+      parameters:
+      - description: desc
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateUnitRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: CreateUnitResponse
+          schema:
+            $ref: '#/definitions/CreateUnitResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - property
+  /units/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get unit
+      operationId: getUnit
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: UnitsResponse
+          schema:
+            $ref: '#/definitions/UnitsResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - property
   /user/{id}:
     put:
       consumes:

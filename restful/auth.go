@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/solabsafrica/afrikanest/exceptions"
+	"github.com/solabsafrica/afrikanest/logger"
 	"github.com/solabsafrica/afrikanest/restful/request"
 	"github.com/solabsafrica/afrikanest/restful/response"
 	"github.com/solabsafrica/afrikanest/service"
@@ -73,6 +74,9 @@ func (ctrl *authController) RefreshTokenHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnprocessableEntity, err)
 		return
 	}
+
+	logger.Info(refreshTokenRequest.Token)
+
 	token, err := ctrl.authService(ctx.Request.Context()).RefreshToken(refreshTokenRequest.Token)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, err)

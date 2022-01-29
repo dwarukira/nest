@@ -3,6 +3,8 @@ package db
 import (
 	"context"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type DatabaseWithCtx func(context.Context) Database
@@ -46,4 +48,5 @@ type Database interface {
 	WithTimeout(function func(Database) Database, timeout time.Duration) Database
 	Distinct() Database
 	Pluck(column string, value interface{}) Database
+	GormDB() *gorm.DB
 }

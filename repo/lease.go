@@ -56,7 +56,7 @@ func (repo *leaseRepoImpl) GetLeaseById(id uuid.UUID) (model.Lease, error) {
 func (repo *leaseRepoImpl) QueryLeases(query LeaseQuery) ([]model.Lease, int64, error) {
 	var count int64
 	leases := []model.Lease{}
-	db := repo.db(repo.ctx).Model(&model.Lease{}).
+	db := repo.db(repo.ctx).Debug().Model(&model.Lease{}).
 		Offset(query.Offset).
 		Limit(query.Limit).
 		Where("unit_id = ?", query.UnitID).

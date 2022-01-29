@@ -36,6 +36,7 @@ type Lease struct {
 	RentDueDayOfMonth int             `gorm:"column:rent_due_day_of_month" json:"rent_due_day_of_month"`
 	Unit              Unit            `json:"unit"`
 	Tenants           *[]Tenant       `json:"tenants"`
+	Charges           []LeaseCharge   `json:"lease_charges"`
 }
 
 func (l *Lease) TableName() string {

@@ -6,7 +6,9 @@ const DefaultPageSize = 25
 const MaxPageSize = 100
 
 type PageRequest struct {
-	Page     int
+	// in query
+	Page int
+	// in query
 	PageSize int
 }
 

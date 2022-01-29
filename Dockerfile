@@ -1,3 +1,4 @@
+alias lt='ls --human-readable --size -1 -S --classify'1
 ARG BASE_IMG=golang:1.16-buster
 
 FROM ${BASE_IMG} AS builder

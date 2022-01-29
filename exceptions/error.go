@@ -27,6 +27,7 @@ var (
 	UnitCreateFailed     Error = NewError(("unit.create.failed"))
 	UnitNotExists        Error = NewError("unit.not.exists")
 	PropertyNotExists    Error = NewError(("property.not.exists"))
+	GetPropertyFailed    Error = NewError(("property.get.failed"))
 
 	LeaseCreateFaild Error = NewError("lease.create.faild")
 	LeaseNotExists   Error = NewError("lease.not.exists")

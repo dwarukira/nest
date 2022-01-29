@@ -6,6 +6,7 @@ import (
 	"github.com/solabsafrica/afrikanest/model"
 )
 
+// swagger:model CreateLeaseResponse
 type CreateLeaseResponse struct {
 	ID        string    `json:"id"`
 	CreatedAt time.Time `json:"created_at"`

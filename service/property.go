@@ -18,6 +18,7 @@ type PropertyService interface {
 	CreateUnit(model.Unit) (model.Unit, error)
 	GetPropertyById(uuid.UUID) (model.Property, error)
 	ListUserProperties(page int, pageSize int, userId uuid.UUID) ([]model.Property, int64, error)
+	ListUserUnits(page int, pageSize int, userId uuid.UUID, query string) ([]model.Unit, int64, error)
 	GetUnitById(uuid.UUID) (model.Unit, error)
 }
 
@@ -65,6 +66,11 @@ func (propertyService *propertyServiceImpl) GetUnitById(id uuid.UUID) (model.Uni
 func (propertyService *propertyServiceImpl) ListUserProperties(page int, pageSize int, userID uuid.UUID) ([]model.Property, int64, error) {
 	query := repo.PropertyQuery{Offset: page * pageSize, Limit: pageSize, OwnerID: userID}
 	return propertyService.propertyRepo(propertyService.ctx).QueryProperties(query)
+}
+
+func (propertyService *propertyServiceImpl) ListUserUnits(page int, pageSize int, userID uuid.UUID, queryParam string) ([]model.Unit, int64, error) {
+	query := repo.PropertyQuery{Offset: page * pageSize, Limit: pageSize, OwnerID: userID, Query: &queryParam}
+	return propertyService.propertyRepo(propertyService.ctx).QueryUnits(query)
 }
 
 func NewPropertyServiceWithContext(propertyRepo repo.PropertyRepoWithContext) PropertyServiceWithContext {

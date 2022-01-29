@@ -6,6 +6,27 @@ import (
 	"github.com/solabsafrica/afrikanest/model"
 )
 
+// swagger:parameters createProperty
+type CreatePropertyRequestParameters struct {
+	// in: body
+	// required: true
+	Body CreatePropertyRequest
+}
+
+// swagger:parameters getProperty
+type GetPropertyRequest struct {
+	// in: path
+	// required: true
+	ID string `json:"id"`
+}
+
+// swagger:parameters getUnit
+type NewUnitRequest struct {
+	// in: path
+	// required: true
+	ID string `json:"id"`
+}
+
 type CreatePropertyRequest struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -29,8 +50,30 @@ func (createPropertyRequest CreatePropertyRequest) ToProperty() (model.Property,
 }
 
 type CreateUnitRequest struct {
-	CreatePropertyRequest
-	PropertyID string `json:"property_id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	DefaultRent int64  `json:"default_rent"`
+	PropertyID  string `json:"property_id"`
+}
+
+// swagger:parameters createUnit
+type GetNewUnitRequestParams struct {
+	// desc
+	// in: body
+	// required: true
+	Body CreateUnitRequest
+}
+
+// swagger:parameters getUnits
+type GetNewUnitRequest struct {
+	PageRequest
+	// in: query
+	// required: false
+	Name string `json:"name"`
+
+	// in: query
+	// required: false
+	Query string `json:"query"`
 }
 
 func (createUnitRequest CreateUnitRequest) Validate() error {
@@ -60,4 +103,14 @@ func (createUnitRequest CreateUnitRequest) ToUnit() (model.Unit, error) {
 		PropertyID:  i,
 	}, nil
 
+}
+
+func NewGetUnitRequest(pageAsString string, pageSizeAsString string, name string, query string) GetNewUnitRequest {
+	pageRequest := NewPageRequest(pageAsString, pageSizeAsString)
+
+	return GetNewUnitRequest{
+		PageRequest: pageRequest,
+		Name:        name,
+		Query:       query,
+	}
 }

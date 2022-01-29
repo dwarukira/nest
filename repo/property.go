@@ -2,10 +2,13 @@ package repo
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/solabsafrica/afrikanest/db"
+	"github.com/solabsafrica/afrikanest/logger"
 	"github.com/solabsafrica/afrikanest/model"
+	"gorm.io/gorm/clause"
 )
 
 type PropertyRepoWithContext func(ctx context.Context) PropertyRepo
@@ -13,9 +16,9 @@ type PropertyRepoWithContext func(ctx context.Context) PropertyRepo
 type PropertyQuery struct {
 	Name    *string
 	OwnerID uuid.UUID
-
-	Offset int
-	Limit  int
+	Query   *string
+	Offset  int
+	Limit   int
 }
 
 type PropertyRepo interface {
@@ -24,6 +27,7 @@ type PropertyRepo interface {
 	GetById(uuid.UUID) (model.Property, error)
 	GetUnitById(uuid.UUID) (model.Unit, error)
 	QueryProperties(query PropertyQuery) (properties []model.Property, total int64, err error)
+	QueryUnits(query PropertyQuery) (units []model.Unit, total int64, err error)
 }
 
 type propertyRepoImpl struct {
@@ -52,7 +56,7 @@ func (repo *propertyRepoImpl) CreateUnit(unit model.Unit) (model.Unit, error) {
 
 func (repo *propertyRepoImpl) GetById(id uuid.UUID) (model.Property, error) {
 	var property model.Property
-	err := repo.db(repo.ctx).First(&property, "id = ?", id).Error()
+	err := repo.db(repo.ctx).Preload("Units").First(&property, "id = ?", id).Error()
 	return property, err
 }
 
@@ -71,4 +75,25 @@ func (repo *propertyRepoImpl) QueryProperties(query PropertyQuery) ([]model.Prop
 		Where("owner_id = ?", query.OwnerID).Count(&count)
 	err := db.Find(&properties).Error()
 	return properties, count, err
+}
+
+func (repo *propertyRepoImpl) QueryUnits(query PropertyQuery) ([]model.Unit, int64, error) {
+	var count int64
+	units := []model.Unit{}
+	i, err := strconv.Atoi(*query.Query)
+	if err != nil {
+		// handle error
+		i = 0
+	}
+
+	logger.Info(i)
+	db := repo.db(repo.ctx).Debug().
+		Joins("Property").Where("Property.owner_id", query.OwnerID).Preload("Leases.Unit").Preload("Leases.Tenants")
+
+	err = db.Model(&model.Unit{}).
+		Where("units.name LIKE ? OR units.description LIKE ? OR \"Property\".\"name\" LIKE ? ", "%"+*query.Query+"%", "%"+*query.Query+"%", "%"+*query.Query+"%").
+		Preload(clause.Associations).
+		Find(&units).Limit(query.Limit).Count(&count).Error()
+
+	return units, count, err
 }

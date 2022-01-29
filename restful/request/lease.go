@@ -8,6 +8,13 @@ import (
 	"github.com/solabsafrica/afrikanest/model"
 )
 
+// swagger:parameters createLease
+type CreateLeaseRequestParam struct {
+	// in: body
+	// required: true
+	Body CreateLeaseRequest
+}
+
 type CreateLeaseRequest struct {
 	StartDate         string                `json:"start_date"`
 	MonthlyRent       int                   `json:"rent"`
