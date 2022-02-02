@@ -38,6 +38,11 @@ var (
 	TicketCreateFaild Error = NewError("ticket.create.faild")
 	TicketNotExists   Error = NewError("ticket.not.exists")
 
+	LeaseChargePaymentCreateFaild Error = NewError("lease_charge_payment.create.faild")
+	LeaseChargeCreateFaild        Error = NewError("lease_charge.create.faild")
+
+	LeaseChargePaymentAmountExceedsRemainingAmount Error = NewError("lease_charge_payment.amount.exceeds_remaining_amount")
+
 	Unknown Error = NewError("unknown")
 )
 

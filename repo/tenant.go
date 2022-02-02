@@ -21,6 +21,7 @@ type TenantRepo interface {
 	Create(model.Tenant) (model.Tenant, error)
 	GetTenantById(uuid.UUID) (model.Tenant, error)
 	QueryTenants(query TenantQuery) (tenants []model.Tenant, total int64, err error)
+	GetTenantByOwnerId(uuid.UUID) (model.Tenant, error)
 }
 
 type tenantRepoImpl struct {
@@ -49,6 +50,12 @@ func (repo *tenantRepoImpl) QueryTenants(query TenantQuery) ([]model.Tenant, int
 		Count(&count)
 	err := db.Find(&tenants).Error()
 	return tenants, count, err
+}
+
+func (repo *tenantRepoImpl) GetTenantByOwnerId(id uuid.UUID) (model.Tenant, error) {
+	var tenant model.Tenant
+	err := repo.db(repo.ctx).Preload("Lease").Preload("Lease.Unit").First(&tenant, "owner_id = ?", id).Error()
+	return tenant, err
 }
 
 func NewTenantRepoWithContext(db db.DatabaseWithCtx) TenantRepoWithContext {

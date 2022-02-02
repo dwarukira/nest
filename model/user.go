@@ -25,6 +25,7 @@ type User struct {
 	Email             string            `gorm:"column:email"`
 	Phone             string            `gorm:"column:phone"`
 	EncryptedPassword EncryptedPassword `gorm:"column:password"`
+	Accounts          []Account         `gorm:"many2many:memberships;"`
 }
 
 func (u User) TableName() string {

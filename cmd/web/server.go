@@ -58,14 +58,15 @@ func setup(routerGroup *gin.RouterGroup) {
 	redisClient := db.NewRedis()
 	_, err := redisClient.Ping(context.Background()).Result()
 	if err != nil {
-		logger.Errorf("failde to ping redis %v", err)
+		logger.Errorf("failed to ping redis %v", err)
 	}
 
 	userRepo := repo.NewUserRepoWithContext(database)
 	propertyRepo := repo.NewPropertyRepoWithContext(database)
 	leaseRepo := repo.NewLeaseRepoWithContext(database)
 	ticketRepo := repo.NewTicketRepoWithContext(database)
-	_ = queue.NewJobQueue()
+	tenantRepo := repo.NewTenantRepoWithContext(database)
+	q := queue.NewJobQueue()
 
 	smsService := service.NewSmsServiceWithContext()
 	userService := service.NewUserServiceWithContext(userRepo)
@@ -73,13 +74,17 @@ func setup(routerGroup *gin.RouterGroup) {
 	propertyService := service.NewPropertyServiceWithContext(propertyRepo)
 	leaseService := service.NewLeaseServiceWithContext(leaseRepo)
 	ticketService := service.NewTicketServiceWithContext(ticketRepo)
+	emailService := service.NewEmailServiceWithContext(q)
+	tenantService := service.NewTenantServiceWithContext(tenantRepo, userRepo)
+
 	authChecker := middlewares.NewAuthChecker(authService)
 
 	restful.NewUserController(routerGroup, authChecker, userService)
 	restful.NewAuthController(routerGroup, authService)
 	restful.NewPropertyController(routerGroup, authChecker, propertyService)
-	restful.NewLeaseController(routerGroup, authChecker, leaseService, propertyService, smsService)
+	restful.NewLeaseController(routerGroup, authChecker, leaseService, propertyService, smsService, emailService)
 	restful.NewTicketController(routerGroup, authChecker, ticketService)
+	restful.NewTenantController(routerGroup, authChecker, tenantService)
 }
 
 func (server *restfulServer) Run() error {

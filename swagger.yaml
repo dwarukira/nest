@@ -2,6 +2,35 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  Account:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      id:
+        $ref: '#/definitions/UUID'
+      name:
+        type: string
+        x-go-name: Name
+      tenants:
+        items:
+          $ref: '#/definitions/Tenant'
+        type: array
+        x-go-name: Tenants
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+      users:
+        items:
+          $ref: '#/definitions/User'
+        type: array
+        x-go-name: Users
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
   Base:
     description: Base base struct
     properties:
@@ -19,8 +48,57 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/model
+  CreateLeaseChargePaymentRequestBody:
+    properties:
+      amount:
+        description: 'in: body'
+        format: int64
+        type: integer
+        x-go-name: Amount
+      paymentDate:
+        type: string
+        x-go-name: PaymentDate
+      sentEmailToTenant:
+        type: boolean
+        x-go-name: SentEmailToTenant
+    required:
+    - amount
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/request
+  CreateLeaseChargeRequestBody:
+    properties:
+      amount:
+        description: 'in: body'
+        format: int64
+        type: integer
+        x-go-name: Amount
+      charge_type:
+        $ref: '#/definitions/LeaseChargeTypeEmun'
+      description:
+        description: 'in: body'
+        type: string
+        x-go-name: Description
+      due_date:
+        description: 'in: body'
+        type: string
+        x-go-name: DueDate
+      notify_tenant:
+        description: 'in: body'
+        type: boolean
+        x-go-name: NotifyTenant
+    required:
+    - amount
+    - description
+    - due_date
+    - notify_tenant
+    - charge_type
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/request
   CreateLeaseRequest:
     properties:
+      invite:
+        type: boolean
+        x-go-name: InviteTenants
       rent:
         format: int64
         type: integer
@@ -219,7 +297,7 @@ definitions:
         items:
           $ref: '#/definitions/LeaseCharge'
         type: array
-        x-go-name: Charges
+        x-go-name: LeaseCharge
       lease_number:
         type: string
         x-go-name: LeaseNumber
@@ -256,12 +334,22 @@ definitions:
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/model
+  LeaseBalanceResponse:
+    properties:
+      balance:
+        format: int64
+        type: integer
+        x-go-name: Balance
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
   LeaseCharge:
     properties:
       amount:
         format: int64
         type: integer
         x-go-name: Amount
+      charge_type:
+        $ref: '#/definitions/LeaseChargeTypeEmun'
       created_at:
         format: date-time
         type: string
@@ -279,17 +367,197 @@ definitions:
         $ref: '#/definitions/UUID'
       lease:
         $ref: '#/definitions/Lease'
+      lease_charge_type_id:
+        $ref: '#/definitions/UUID'
+      lease_charges_payment:
+        items:
+          $ref: '#/definitions/LeaseChargePayment'
+        type: array
+        x-go-name: LeaseChargesPayments
       lease_id:
         $ref: '#/definitions/UUID'
       name:
         type: string
         x-go-name: Name
+      recived_amount:
+        format: int64
+        type: integer
+        x-go-name: RecivedAmount
+      remaining_amount:
+        format: int64
+        type: integer
+        x-go-name: RemainingAmount
       updated_at:
         format: date-time
         type: string
         x-go-name: UpdatedAt
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/model
+  LeaseChargePayment:
+    properties:
+      amount:
+        format: int64
+        type: integer
+        x-go-name: Amount
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      id:
+        $ref: '#/definitions/UUID'
+      lease_charge:
+        $ref: '#/definitions/LeaseCharge'
+      lease_charge_id:
+        $ref: '#/definitions/UUID'
+      payment_date:
+        format: date-time
+        type: string
+        x-go-name: PaymentDate
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  LeaseChargePaymentResponse:
+    properties:
+      amount:
+        format: int64
+        type: integer
+        x-go-name: Amount
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      id:
+        $ref: '#/definitions/UUID'
+      lease_charge:
+        $ref: '#/definitions/LeaseCharge'
+      lease_charge_id:
+        $ref: '#/definitions/UUID'
+      payment_date:
+        format: date-time
+        type: string
+        x-go-name: PaymentDate
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  LeaseChargeResponse:
+    properties:
+      amount:
+        format: int64
+        type: integer
+        x-go-name: Amount
+      charge_type:
+        $ref: '#/definitions/LeaseChargeTypeEmun'
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      description:
+        type: string
+        x-go-name: Description
+      due_date:
+        format: date-time
+        type: string
+        x-go-name: DueDate
+      id:
+        $ref: '#/definitions/UUID'
+      lease:
+        $ref: '#/definitions/Lease'
+      lease_charge_type_id:
+        $ref: '#/definitions/UUID'
+      lease_charges_payment:
+        items:
+          $ref: '#/definitions/LeaseChargePayment'
+        type: array
+        x-go-name: LeaseChargesPayments
+      lease_id:
+        $ref: '#/definitions/UUID'
+      name:
+        type: string
+        x-go-name: Name
+      recived_amount:
+        format: int64
+        type: integer
+        x-go-name: RecivedAmount
+      remaining_amount:
+        format: int64
+        type: integer
+        x-go-name: RemainingAmount
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  LeaseChargeTypeEmun:
+    type: string
+    x-go-package: github.com/solabsafrica/afrikanest/model
+  LeaseResponse:
+    properties:
+      created_at:
+        format: date-time
+        type: string
+        x-go-name: CreatedAt
+      deleted_at:
+        $ref: '#/definitions/DeletedAt'
+      end_date:
+        format: date-time
+        type: string
+        x-go-name: EndDate
+      id:
+        $ref: '#/definitions/UUID'
+      lease_charges:
+        items:
+          $ref: '#/definitions/LeaseCharge'
+        type: array
+        x-go-name: LeaseCharge
+      lease_number:
+        type: string
+        x-go-name: LeaseNumber
+      lease_status:
+        $ref: '#/definitions/LeaseStatusType'
+      rent:
+        format: int64
+        type: integer
+        x-go-name: MonthlyRent
+      rent_due_day_of_month:
+        format: int64
+        type: integer
+        x-go-name: RentDueDayOfMonth
+      security_deposit:
+        format: int64
+        type: integer
+        x-go-name: SecurityDeposit
+      start_date:
+        format: date-time
+        type: string
+        x-go-name: StartDate
+      tenants:
+        items:
+          $ref: '#/definitions/Tenant'
+        type: array
+        x-go-name: Tenants
+      unit:
+        $ref: '#/definitions/Unit'
+      unit_id:
+        $ref: '#/definitions/UUID'
+      updated_at:
+        format: date-time
+        type: string
+        x-go-name: UpdatedAt
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
   LeaseStatusType:
     type: string
     x-go-package: github.com/solabsafrica/afrikanest/model
@@ -367,10 +635,18 @@ definitions:
     x-go-package: github.com/solabsafrica/afrikanest/restful/request
   Tenant:
     properties:
+      account:
+        $ref: '#/definitions/Account'
+      account_id:
+        $ref: '#/definitions/UUID'
       created_at:
         format: date-time
         type: string
         x-go-name: CreatedAt
+      created_by:
+        $ref: '#/definitions/User'
+      created_by_id:
+        $ref: '#/definitions/UUID'
       deleted_at:
         $ref: '#/definitions/DeletedAt'
       email:
@@ -412,6 +688,17 @@ definitions:
         $ref: '#/definitions/UUID'
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/model
+  TenantsResponse:
+    properties:
+      pagination:
+        $ref: '#/definitions/Pagination'
+      tenants:
+        items:
+          $ref: '#/definitions/Tenant'
+        type: array
+        x-go-name: Tenants
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
   UUID:
     description: |-
       A UUID is a 128 bit (16 byte) Universal Unique IDentifier as defined in RFC
@@ -524,6 +811,10 @@ definitions:
     x-go-package: github.com/solabsafrica/afrikanest/restful/response
   User:
     properties:
+      Accounts:
+        items:
+          $ref: '#/definitions/Account'
+        type: array
       Email:
         type: string
       EncryptedPassword:
@@ -573,6 +864,171 @@ paths:
           description: CreateLeaseResponse
           schema:
             $ref: '#/definitions/CreateLeaseResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - lease
+  /leases/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a lease
+      operationId: getLease
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: LeaseResponse
+          schema:
+            $ref: '#/definitions/LeaseResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - lease
+  /leases/{id}/balance:
+    get:
+      consumes:
+      - application/json
+      description: Get a lease balance
+      operationId: getLeaseBalance
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: LeaseBalanceResponse
+          schema:
+            $ref: '#/definitions/LeaseBalanceResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - lease
+  /leases/{id}/charges:
+    post:
+      consumes:
+      - application/json
+      description: Create a lease charge
+      operationId: createLeaseCharge
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateLeaseChargeRequestBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: LeaseChargeResponse
+          schema:
+            $ref: '#/definitions/LeaseChargeResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - lease
+  /leases/{id}/charges/{leaseChargeId}:
+    get:
+      consumes:
+      - application/json
+      description: Get a lease charges
+      operationId: getLeaseCharge
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      - in: path
+        name: leaseChargeId
+        required: true
+        type: string
+        x-go-name: LeaseChargeID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: LeaseChargeResponse
+          schema:
+            $ref: '#/definitions/LeaseChargeResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - lease
+  /leases/{id}/charges/{leaseChargeId}/payments:
+    post:
+      consumes:
+      - application/json
+      description: Create a lease charge
+      operationId: createLeaseChargePayment
+      parameters:
+      - in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/CreateLeaseChargePaymentRequestBody'
+      - in: path
+        name: leaseChargeId
+        required: true
+        type: string
+        x-go-name: LeaseChargeID
+      - in: path
+        name: id
+        required: true
+        type: string
+        x-go-name: ID
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: LeaseChargePaymentResponse
+          schema:
+            $ref: '#/definitions/LeaseChargePaymentResponse'
         "401":
           description: ErrorResponse
           schema:
@@ -710,6 +1166,32 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       tags:
       - property
+  /tenants:
+    get:
+      consumes:
+      - application/json
+      description: Get all tenants
+      operationId: getTenants
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: TenantsResponse
+          schema:
+            $ref: '#/definitions/TenantsResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      schemes:
+      - http
+      - https
+      tags:
+      - Tenants
   /units:
     get:
       consumes:

@@ -19,6 +19,10 @@ type Tenant struct {
 	Lease          Lease      `json:"lease"`
 	UserID         *uuid.UUID `json:"user_id" gorm:"column:user_id"`
 	User           *User      `json:"user"`
+	CreatedBy      *User      `json:"created_by" gorm:"column:created_by"`
+	CreatedByID    *uuid.UUID `json:"created_by_id" gorm:"column:created_by_id"`
+	Account        Account    `json:"account"`
+	AccountID      *uuid.UUID `json:"account_id" gorm:"column:account_id"`
 }
 
 func (Tenant) TableName() string {

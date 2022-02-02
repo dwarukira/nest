@@ -55,7 +55,7 @@ func (repo *userRepoImpl) Save(user model.User) error {
 
 func (repo *userRepoImpl) GetById(id uuid.UUID) (model.User, error) {
 	var user model.User
-	err := repo.db(repo.ctx).First(&user, "id = ?", id).Error()
+	err := repo.db(repo.ctx).Preload("Accounts").Preload("Accounts.Tenants").First(&user, "id = ?", id).Error()
 	return user, err
 }
 

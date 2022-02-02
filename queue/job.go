@@ -1,8 +1,6 @@
 package queue
 
 import (
-	"github.com/solabsafrica/afrikanest/model"
-
 	"github.com/RichardKnop/machinery/v2/tasks"
 )
 
@@ -30,19 +28,24 @@ func (arg Arg) ToTaskArg() tasks.Arg {
 	}
 }
 
-func NewSendEmailJob(user model.User, content string) Job {
+func NewSendEmailJob(to string, content string, textContent string) Job {
 	return Job{
 		Name: "send_email",
 		Args: []Arg{
 			Arg{
 				Name:  "email",
 				Type:  "string",
-				Value: user.Email,
+				Value: to,
 			},
 			Arg{
 				Name:  "content",
 				Type:  "string",
 				Value: content,
+			},
+			Arg{
+				Name:  "textContent",
+				Type:  "string",
+				Value: textContent,
 			},
 		},
 		Retries: 3,
