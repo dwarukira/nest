@@ -74,20 +74,36 @@ func (ctrl *propertyController) CreatePropertyHandler(ctx *gin.Context) {
 	}
 }
 
+// swagger:route GET /properties property getProperties
+//
+// Get all properties
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// responses:
+// 	200: GetPropertiesResponse
+// 	401: ErrorResponse
+// 	500: ErrorResponse
+// 	404: ErrorResponse
 func (ctrl *propertyController) GetPropertiesHandler(ctx *gin.Context) {
-	page := request.NewPageRequest(ctx.Query("page"), ctx.Query("pageSize"))
+	// page := request.NewPageRequest(ctx.Query("page"), ctx.Query("pageSize"))
+	propertyRequest := request.NewGetPropertiesRequest(ctx.Query("page"), ctx.Query("pageSize"), ctx.Query("name"), ctx.Query("query"))
+
 	i, err := GetIndentityFromContext(ctx)
 	if err != nil {
 		logger.Error(err)
 		ctx.JSON(http.StatusUnauthorized, err)
 	}
-	properties, totalCount, err := ctrl.propertyService(ctx).ListUserProperties(page.Page, page.PageSize, i)
+	properties, totalCount, err := ctrl.propertyService(ctx).ListUserProperties(propertyRequest.Page, propertyRequest.PageSize, i, propertyRequest.Query)
 	if err != nil {
 		logger.Error(err)
 		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
-	ctx.JSON(http.StatusOK, response.NewGetPropertiesResponse(properties, response.NewPagination(page.Page, page.PageSize, totalCount)))
+	ctx.JSON(http.StatusOK, response.NewGetPropertiesResponse(properties, response.NewPagination(propertyRequest.Page, propertyRequest.PageSize, totalCount)))
 }
 
 // swagger:route GET /properties/{id} property getProperty

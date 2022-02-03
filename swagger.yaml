@@ -240,6 +240,17 @@ definitions:
         x-go-name: Type
     type: object
     x-go-package: github.com/solabsafrica/afrikanest/restful/response
+  GetPropertiesResponse:
+    properties:
+      pagination:
+        $ref: '#/definitions/Pagination'
+      properties:
+        items:
+          $ref: '#/definitions/Property'
+        type: array
+        x-go-name: Properties
+    type: object
+    x-go-package: github.com/solabsafrica/afrikanest/restful/response
   GetPropertyResponse:
     properties:
       property:
@@ -774,6 +785,11 @@ definitions:
         $ref: '#/definitions/Property'
       property_id:
         $ref: '#/definitions/UUID'
+      status:
+        items:
+          type: string
+        type: array
+        x-go-name: Status
       updated_at:
         format: date-time
         type: string
@@ -1101,6 +1117,51 @@ paths:
       tags:
       - user
   /properties:
+    get:
+      consumes:
+      - application/json
+      description: Get all properties
+      operationId: getProperties
+      parameters:
+      - description: in query
+        format: int64
+        in: query
+        name: Page
+        type: integer
+      - description: in query
+        format: int64
+        in: query
+        name: PageSize
+        type: integer
+      - in: query
+        name: name
+        type: string
+        x-go-name: Name
+      - in: query
+        name: query
+        type: string
+        x-go-name: Query
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: GetPropertiesResponse
+          schema:
+            $ref: '#/definitions/GetPropertiesResponse'
+        "401":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "500":
+          description: ErrorResponse
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      tags:
+      - property
     post:
       consumes:
       - application/json

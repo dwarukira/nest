@@ -56,7 +56,10 @@ func (repo *propertyRepoImpl) CreateUnit(unit model.Unit) (model.Unit, error) {
 
 func (repo *propertyRepoImpl) GetById(id uuid.UUID) (model.Property, error) {
 	var property model.Property
-	err := repo.db(repo.ctx).Preload("Units").First(&property, "id = ?", id).Error()
+	err := repo.db(repo.ctx).Preload("Units").Preload("Units.Leases").Preload("Units.Leases.Tenants").Preload("Units.Property").First(&property, "id = ?", id).Error()
+	for _, unit := range *property.Units {
+		unit.GetCurrentLease()
+	}
 	return property, err
 }
 
@@ -73,7 +76,12 @@ func (repo *propertyRepoImpl) QueryProperties(query PropertyQuery) ([]model.Prop
 		Offset(query.Offset).
 		Limit(query.Limit).
 		Where("owner_id = ?", query.OwnerID).Count(&count)
-	err := db.Find(&properties).Error()
+
+	if *query.Query != "" {
+		db = db.Where("name LIKE ? OR description LIKE ?", "%"+*query.Query+"%", "%"+*query.Query+"%")
+	}
+
+	err := db.Count(&count).Find(&properties).Error()
 	return properties, count, err
 }
 
@@ -88,11 +96,11 @@ func (repo *propertyRepoImpl) QueryUnits(query PropertyQuery) ([]model.Unit, int
 
 	logger.Info(i)
 	db := repo.db(repo.ctx).Debug().
-		Joins("Property").Where("Property.owner_id", query.OwnerID).Preload("Leases.Unit").Preload("Leases.Tenants")
+		Joins("Property").Where("Property.owner_id", query.OwnerID).Preload("Leases.Unit").Preload("Leases.Tenants").Preload("Leases.LeaseCharge").Preload("Leases.LeaseCharge.LeaseChargesPayments")
 
 	err = db.Model(&model.Unit{}).
 		Where("units.name LIKE ? OR units.description LIKE ? OR \"Property\".\"name\" LIKE ? ", "%"+*query.Query+"%", "%"+*query.Query+"%", "%"+*query.Query+"%").
-		Preload(clause.Associations).
+		Preload(clause.Associations).Preload("Leases.LeaseCharge.LeaseChargesPayments").
 		Find(&units).Limit(query.Limit).Count(&count).Error()
 
 	return units, count, err

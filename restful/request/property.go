@@ -76,6 +76,19 @@ type GetNewUnitRequest struct {
 	Query string `json:"query"`
 }
 
+// swagger:parameters getProperties
+type GetPropertiesRequest struct {
+	PageRequest
+
+	// in: query
+	// required: false
+	Name string `json:"name"`
+
+	// in: query
+	// required: false
+	Query string `json:"query"`
+}
+
 func (createUnitRequest CreateUnitRequest) Validate() error {
 	if len(createUnitRequest.Name) == 0 {
 		return exceptions.UnitCreateFailed.SetMessage("name must be provided")
@@ -109,6 +122,16 @@ func NewGetUnitRequest(pageAsString string, pageSizeAsString string, name string
 	pageRequest := NewPageRequest(pageAsString, pageSizeAsString)
 
 	return GetNewUnitRequest{
+		PageRequest: pageRequest,
+		Name:        name,
+		Query:       query,
+	}
+}
+
+func NewGetPropertiesRequest(pageAsString string, pageSizeAsString string, name string, query string) GetPropertiesRequest {
+	pageRequest := NewPageRequest(pageAsString, pageSizeAsString)
+
+	return GetPropertiesRequest{
 		PageRequest: pageRequest,
 		Name:        name,
 		Query:       query,

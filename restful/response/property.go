@@ -24,6 +24,7 @@ type CreateUnitResponse struct {
 	CreatedAt  time.Time `json:"created_at"`
 }
 
+// swagger:model GetPropertiesResponse
 type GetPropertiesResponse struct {
 	Pagination Pagination       `json:"pagination"`
 	Properties []model.Property `json:"properties"`
@@ -44,6 +45,7 @@ type GetUnitsResponse struct {
 type UnitsResponse struct {
 	model.Unit
 	CurrentLease *model.Lease `json:"current_lease"`
+	Status       []string     `json:"status"`
 }
 
 func NewUnitResponse(unit model.Unit) UnitsResponse {
@@ -80,13 +82,42 @@ func NewGetPropertiesResponse(properties []model.Property, pagination Pagination
 	}
 }
 
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 func NewGetUnitsResponse(units []model.Unit, pagination Pagination) GetUnitsResponse {
 	var unitsResponse []UnitsResponse
 	for _, unit := range units {
 		currentLease := unit.GetCurrentLease()
+		// TODO: This is a hack to get the status of the unit.
+		// consider moving this to the model.
+		var status []string
+		overdue := "https://badgen.net/badge/icon/overdue?label&labelColor=white&color=red"
+		if currentLease != nil {
+			for _, charge := range *currentLease.LeaseCharge {
+				var leaseCharges int64
+				for _, leaseCharge := range charge.LeaseChargesPayments {
+					leaseCharges += leaseCharge.Amount
+				}
+				if charge.Amount-leaseCharges > 0 && charge.DueDate.Before(time.Now()) {
+					if !contains(status, overdue) {
+						status = append(status, overdue)
+					}
+				}
+			}
+		} else {
+			status = append(status, "https://badgen.net/badge/icon/vacant?label&labelColor=white&color=yellow")
+		}
 
 		unitsResponse = append(unitsResponse, UnitsResponse{
 			Unit:         unit,
+			Status:       status,
 			CurrentLease: currentLease,
 		})
 	}
