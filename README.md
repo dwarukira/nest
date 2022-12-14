@@ -1,7 +1,3 @@
-# api-server-boilerplate
-A docker-ready golang api server boilerplate that helps to set up project faster.
-
-We have been developing Golang microservice for a few years now. Thought it will be nice to create a boilerplate from what has been working for us, and things we have learnt so far. This is by no means the "best" or "conventional" layout for all purposes, you should alway evaluate the nature and need of your project before adopting other technologies, but please feel free to take any part of the code that you might find useful.
 
 ## Get started
 ### Development on docker-compose
